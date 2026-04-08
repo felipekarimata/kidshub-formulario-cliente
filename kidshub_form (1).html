@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidsHub – Pesquisa</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Arial',sans-serif;background:#f5f7fa;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px 60px}
+  .card{background:#fff;border-radius:16px;padding:32px 28px;max-width:600px;width:100%;box-shadow:0 2px 12px rgba(0,0,0,0.07);margin-bottom:16px}
+  .logo-area{text-align:center;margin-bottom:28px}
+  .logo-img{height:90px;width:auto}
+  .seg-badge{display:inline-block;font-size:12px;font-weight:600;padding:4px 14px;border-radius:20px;margin-bottom:12px}
+  .badge-a{background:#FFF0E6;color:#FF6B00}
+  .badge-b{background:#E0F5F2;color:#007A6C}
+  .badge-c{background:#E8F0FE;color:#1A3C6E}
+  .badge-all{background:#F3F4F6;color:#374151}
+  h1{font-family:'Georgia',serif;font-size:22px;color:#0D2B45;line-height:1.3;margin-bottom:6px}
+  .subtitle{font-size:14px;color:#6B7280;line-height:1.5;margin-bottom:24px}
+  .progress-bar{height:4px;background:#E5E7EB;border-radius:4px;margin-bottom:28px}
+  .progress-fill{height:4px;background:linear-gradient(90deg,#FF6B00,#00A896);border-radius:4px;transition:width .4s}
+  .q-block{margin-bottom:28px}
+  .q-label{font-size:15px;font-weight:600;color:#0D2B45;margin-bottom:12px;line-height:1.4}
+  .q-label span.required{color:#FF6B00;margin-left:2px}
+  .option{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;margin-bottom:8px;cursor:pointer;transition:border-color .2s,background .2s}
+  .option:hover{border-color:#FF6B00;background:#FFF8F4}
+  .option.selected{border-color:#FF6B00;background:#FFF3EA}
+  .option input{margin-top:2px;accent-color:#FF6B00;flex-shrink:0}
+  .option label{font-size:14px;color:#374151;cursor:pointer;line-height:1.4}
+  textarea{width:100%;border:1.5px solid #E5E7EB;border-radius:10px;padding:12px 14px;font-size:14px;color:#374151;resize:vertical;min-height:90px;font-family:Arial,sans-serif;outline:none;transition:border-color .2s}
+  textarea:focus{border-color:#FF6B00}
+  .nps-row{display:flex;gap:6px;flex-wrap:wrap}
+  .nps-btn{width:44px;height:44px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;color:#374151;background:#fff;cursor:pointer;transition:all .2s;flex-shrink:0}
+  .nps-btn:hover{border-color:#FF6B00;color:#FF6B00}
+  .nps-btn.selected{background:#FF6B00;border-color:#FF6B00;color:#fff}
+  .nps-labels{display:flex;justify-content:space-between;font-size:11px;color:#9CA3AF;margin-top:6px}
+  .btn-next{width:100%;padding:14px;background:#FF6B00;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:8px}
+  .btn-next:hover{background:#e05e00}
+  .btn-next:disabled{background:#E5E7EB;color:#9CA3AF;cursor:not-allowed}
+  .error-msg{font-size:12px;color:#E24B4A;margin-top:4px;display:none}
+  .screen{display:none}
+  .screen.active{display:block}
+  .thank-you{text-align:center;padding:16px 0}
+  .thank-icon{font-size:48px;margin-bottom:16px}
+  .thank-you h2{font-family:'Georgia',serif;font-size:22px;color:#0D2B45;margin-bottom:10px}
+  .thank-you p{font-size:14px;color:#6B7280;line-height:1.6}
+  .choose-seg h2{font-family:'Georgia',serif;font-size:20px;color:#0D2B45;margin-bottom:8px}
+  .choose-seg p{font-size:14px;color:#6B7280;margin-bottom:20px;line-height:1.5}
+  .seg-card{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid #E5E7EB;border-radius:12px;margin-bottom:10px;cursor:pointer;transition:all .2s}
+  .seg-card:hover{border-color:#FF6B00;background:#FFF8F4}
+  .seg-icon{font-size:24px;flex-shrink:0}
+  .seg-card-text{font-size:14px;font-weight:600;color:#0D2B45}
+  .seg-card-sub{font-size:12px;color:#6B7280;margin-top:2px}
+  @media(max-width:480px){.card{padding:24px 18px}.nps-btn{width:38px;height:38px;font-size:13px}}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo-area">
+    <img src="logo.png" alt="Kidshub" class="logo-img">
+  </div>
+
+  <!-- TELA 0: Seleção de segmento (fallback sem parâmetro) -->
+  <div class="screen" id="screen-choose">
+    <div class="choose-seg">
+      <h2>Nos conta um pouco sobre você 👋</h2>
+      <p>Selecione a opção que melhor descreve sua relação com o KidsHub:</p>
+    </div>
+    <div class="seg-card" onclick="escolherSegmento('A')">
+      <div class="seg-icon">🔍</div>
+      <div><div class="seg-card-text">Me cadastrei mas ainda não agendei nenhuma atividade</div><div class="seg-card-sub">Só criei a conta</div></div>
+    </div>
+    <div class="seg-card" onclick="escolherSegmento('B')">
+      <div class="seg-icon">🗓️</div>
+      <div><div class="seg-card-text">Já agendei uma atividade mas não assinei o plano</div><div class="seg-card-sub">Experimentei mas não continuei</div></div>
+    </div>
+    <div class="seg-card" onclick="escolherSegmento('C')">
+      <div class="seg-icon">💛</div>
+      <div><div class="seg-card-text">Fui assinante mas cancelei</div><div class="seg-card-sub">Já usei o plano por um tempo</div></div>
+    </div>
+  </div>
+
+  <!-- TELA 1: Abertura -->
+  <div class="screen" id="screen-1">
+    <div class="progress-bar"><div class="progress-fill" id="progress" style="width:10%"></div></div>
+    <span class="seg-badge badge-all" id="badge-abertura">Todos os perfis</span>
+    <h1 id="form-title">Sua opinião importa muito para a gente 💛</h1>
+    <p class="subtitle" id="form-subtitle">Leva menos de 3 minutos. Suas respostas ajudam a melhorar o KidsHub para todas as famílias.</p>
+
+    <div class="q-block">
+      <div class="q-label">Como você ficou sabendo do KidsHub?<span class="required">*</span></div>
+      <div id="q1-opts">
+        <div class="option" onclick="toggleOpt(this,'q1','multi')"><input type="checkbox" name="q1" value="Amigos ou família"><label>Amigos ou família</label></div>
+        <div class="option" onclick="toggleOpt(this,'q1','multi')"><input type="checkbox" name="q1" value="Instagram"><label>Instagram</label></div>
+        <div class="option" onclick="toggleOpt(this,'q1','multi')"><input type="checkbox" name="q1" value="Google"><label>Google / pesquisa na internet</label></div>
+        <div class="option" onclick="toggleOpt(this,'q1','multi')"><input type="checkbox" name="q1" value="Influenciador"><label>Influenciador ou criador de conteúdo</label></div>
+        <div class="option" onclick="toggleOpt(this,'q1','multi')"><input type="checkbox" name="q1" value="Outro"><label>Outro</label></div>
+      </div>
+      <div class="error-msg" id="err-q1">Selecione ao menos uma opção.</div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-label">Qual era sua expectativa ao se cadastrar no KidsHub?<span class="required">*</span></div>
+      <textarea id="q2" placeholder="Escreva com suas próprias palavras..."></textarea>
+      <div class="error-msg" id="err-q2">Por favor, escreva sua resposta.</div>
+    </div>
+
+    <button class="btn-next" onclick="irPara(2)">Continuar →</button>
+  </div>
+
+  <!-- TELA 2: Perguntas do segmento -->
+  <div class="screen" id="screen-2">
+    <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+
+    <!-- Segmento A -->
+    <div id="seg-a">
+      <span class="seg-badge badge-a">Cadastro sem agendamento</span>
+      <h1>Queremos entender o que aconteceu</h1>
+      <p class="subtitle" style="margin-bottom:24px">Sem julgamento — sua honestidade nos ajuda muito!</p>
+
+      <div class="q-block">
+        <div class="q-label">O que te impediu de agendar uma atividade até agora?<span class="required">*</span></div>
+        <div id="q3a-opts">
+          <div class="option" onclick="toggleOpt(this,'q3a','multi')"><input type="checkbox" name="q3a" value="Nao entendi como funciona"><label>Não entendi bem como funciona</label></div>
+          <div class="option" onclick="toggleOpt(this,'q3a','multi')"><input type="checkbox" name="q3a" value="Preco acima do esperado"><label>Preços acima do que esperava</label></div>
+          <div class="option" onclick="toggleOpt(this,'q3a','multi')"><input type="checkbox" name="q3a" value="Nao achei atividade certa"><label>Não achei a atividade certa para meu filho(a)</label></div>
+          <div class="option" onclick="toggleOpt(this,'q3a','multi')"><input type="checkbox" name="q3a" value="Faltou tempo"><label>Faltou tempo para explorar</label></div>
+          <div class="option" onclick="toggleOpt(this,'q3a','multi')"><input type="checkbox" name="q3a" value="Ainda vou agendar"><label>Ainda pretendo agendar em breve</label></div>
+        </div>
+        <div class="error-msg" id="err-q3a">Selecione ao menos uma opção.</div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Você chegou a explorar as atividades disponíveis?<span class="required">*</span></div>
+        <div id="q4a-opts">
+          <div class="option" onclick="toggleOpt(this,'q4a','single')"><input type="radio" name="q4a" value="Sim, mas nao me interessei"><label>Sim, mas não achei algo que me interessou</label></div>
+          <div class="option" onclick="toggleOpt(this,'q4a','single')"><input type="radio" name="q4a" value="Sim, mas fiquei com duvida"><label>Sim, mas fiquei com dúvida sobre como funciona</label></div>
+          <div class="option" onclick="toggleOpt(this,'q4a','single')"><input type="radio" name="q4a" value="Nao entrei"><label>Não cheguei a entrar na plataforma depois do cadastro</label></div>
+        </div>
+        <div class="error-msg" id="err-q4a">Selecione uma opção.</div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Você usa outras formas para encontrar atividades para seu filho(a)?</div>
+        <textarea id="q5a" placeholder="Ex: busco no Google, peço indicação para amigas, uso outro app..."></textarea>
+      </div>
+    </div>
+
+    <!-- Segmento B -->
+    <div id="seg-b" style="display:none">
+      <span class="seg-badge badge-b">Experimentou mas não assinou</span>
+      <h1>Que bom que você experimentou!</h1>
+      <p class="subtitle" style="margin-bottom:24px">Nos conta como foi a experiência.</p>
+
+      <div class="q-block">
+        <div class="q-label">O que achou da atividade que experimentou?<span class="required">*</span></div>
+        <div id="q3b-opts">
+          <div class="option" onclick="toggleOpt(this,'q3b','single')"><input type="radio" name="q3b" value="Adorei"><label>Adorei — meu filho(a) ficou empolgado(a)!</label></div>
+          <div class="option" onclick="toggleOpt(this,'q3b','single')"><input type="radio" name="q3b" value="Gostei mas nao era o esperado"><label>Gostei, mas não era exatamente o que esperava</label></div>
+          <div class="option" onclick="toggleOpt(this,'q3b','single')"><input type="radio" name="q3b" value="Nao gostei"><label>Não gostei</label></div>
+          <div class="option" onclick="toggleOpt(this,'q3b','single')"><input type="radio" name="q3b" value="Nao cheguei a ir"><label>Agendei mas não cheguei a ir</label></div>
+        </div>
+        <div class="error-msg" id="err-q3b">Selecione uma opção.</div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">O que te fez não continuar com a assinatura?<span class="required">*</span></div>
+        <div id="q4b-opts">
+          <div class="option" onclick="toggleOpt(this,'q4b','multi')"><input type="checkbox" name="q4b" value="Preco"><label>Preço da assinatura</label></div>
+          <div class="option" onclick="toggleOpt(this,'q4b','multi')"><input type="checkbox" name="q4b" value="Poucas opcoes perto"><label>Poucas opções perto de mim</label></div>
+          <div class="option" onclick="toggleOpt(this,'q4b','multi')"><input type="checkbox" name="q4b" value="Agenda incompativel"><label>Agenda incompatível com minha rotina</label></div>
+          <div class="option" onclick="toggleOpt(this,'q4b','multi')"><input type="checkbox" name="q4b" value="Prefiro avulso"><label>Prefiro pagar por atividade avulsa</label></div>
+          <div class="option" onclick="toggleOpt(this,'q4b','multi')"><input type="checkbox" name="q4b" value="Nao vi valor"><label>Não vi valor suficiente na assinatura</label></div>
+        </div>
+        <div class="error-msg" id="err-q4b">Selecione ao menos uma opção.</div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">O que te faria reconsiderar a assinatura?</div>
+        <textarea id="q5b" placeholder="Pode ser mais de uma coisa. Escreva livremente..."></textarea>
+      </div>
+    </div>
+
+    <!-- Segmento C -->
+    <div id="seg-c" style="display:none">
+      <span class="seg-badge badge-c">Ex-assinante</span>
+      <h1>Obrigada por ter feito parte do KidsHub 💛</h1>
+      <p class="subtitle" style="margin-bottom:24px">Sua experiência é a mais valiosa de todas para a gente.</p>
+
+      <div class="q-block">
+        <div class="q-label">Qual foi o principal motivo para cancelar?<span class="required">*</span></div>
+        <div id="q3c-opts">
+          <div class="option" onclick="toggleOpt(this,'q3c','multi')"><input type="checkbox" name="q3c" value="Preco"><label>Preço</label></div>
+          <div class="option" onclick="toggleOpt(this,'q3c','multi')"><input type="checkbox" name="q3c" value="Pouco uso"><label>Acabei usando pouco</label></div>
+          <div class="option" onclick="toggleOpt(this,'q3c','multi')"><input type="checkbox" name="q3c" value="Filho nao quis mais"><label>Meu filho(a) não quis mais</label></div>
+          <div class="option" onclick="toggleOpt(this,'q3c','multi')"><input type="checkbox" name="q3c" value="Mudanca de rotina"><label>Mudei de cidade ou minha rotina mudou muito</label></div>
+          <div class="option" onclick="toggleOpt(this,'q3c','multi')"><input type="checkbox" name="q3c" value="Encontrei alternativa"><label>Encontrei uma alternativa melhor</label></div>
+          <div class="option" onclick="toggleOpt(this,'q3c','multi')"><input type="checkbox" name="q3c" value="Problemas agendamento"><label>Problemas com agendamento ou suporte</label></div>
+        </div>
+        <div class="error-msg" id="err-q3c">Selecione ao menos uma opção.</div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Durante a assinatura, com que frequência você usava a plataforma?<span class="required">*</span></div>
+        <div id="q4c-opts">
+          <div class="option" onclick="toggleOpt(this,'q4c','single')"><input type="radio" name="q4c" value="Toda semana"><label>Toda semana</label></div>
+          <div class="option" onclick="toggleOpt(this,'q4c','single')"><input type="radio" name="q4c" value="A cada 15 dias"><label>A cada 15 dias</label></div>
+          <div class="option" onclick="toggleOpt(this,'q4c','single')"><input type="radio" name="q4c" value="Uma vez por mes"><label>Uma vez por mês</label></div>
+          <div class="option" onclick="toggleOpt(this,'q4c','single')"><input type="radio" name="q4c" value="Menos de uma vez por mes"><label>Menos de uma vez por mês</label></div>
+        </div>
+        <div class="error-msg" id="err-q4c">Selecione uma opção.</div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Tem algo que o KidsHub poderia ter feito diferente para você continuar?</div>
+        <textarea id="q5c" placeholder="Escreva livremente, sem filtro..."></textarea>
+      </div>
+    </div>
+
+    <button class="btn-next" onclick="irPara(3)">Continuar →</button>
+  </div>
+
+  <!-- TELA 3: Encerramento -->
+  <div class="screen" id="screen-3">
+    <div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div>
+    <span class="seg-badge badge-all">Últimas perguntas</span>
+    <h1>Quase lá! ✨</h1>
+    <p class="subtitle" style="margin-bottom:24px">Só mais duas perguntinhas e pronto.</p>
+
+    <div class="q-block">
+      <div class="q-label">De 0 a 10, qual a chance de você indicar o KidsHub para uma amiga?<span class="required">*</span></div>
+      <div class="nps-row" id="nps-btns">
+        <button class="nps-btn" onclick="selectNPS(this,0)">0</button>
+        <button class="nps-btn" onclick="selectNPS(this,1)">1</button>
+        <button class="nps-btn" onclick="selectNPS(this,2)">2</button>
+        <button class="nps-btn" onclick="selectNPS(this,3)">3</button>
+        <button class="nps-btn" onclick="selectNPS(this,4)">4</button>
+        <button class="nps-btn" onclick="selectNPS(this,5)">5</button>
+        <button class="nps-btn" onclick="selectNPS(this,6)">6</button>
+        <button class="nps-btn" onclick="selectNPS(this,7)">7</button>
+        <button class="nps-btn" onclick="selectNPS(this,8)">8</button>
+        <button class="nps-btn" onclick="selectNPS(this,9)">9</button>
+        <button class="nps-btn" onclick="selectNPS(this,10)">10</button>
+      </div>
+      <div class="nps-labels"><span>Nenhuma chance</span><span>Com certeza!</span></div>
+      <div class="error-msg" id="err-nps">Selecione uma nota.</div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-label">Tem mais alguma coisa que você queria que a gente soubesse?</div>
+      <textarea id="q-final" placeholder="Fique à vontade para falar o que quiser..."></textarea>
+    </div>
+
+    <button class="btn-next" id="btn-enviar" onclick="enviar()">Enviar respostas 💛</button>
+  </div>
+
+  <!-- TELA 4: Obrigada -->
+  <div class="screen" id="screen-thanks">
+    <div class="thank-you">
+      <div class="thank-icon">🎉</div>
+      <h2>Muito obrigada!</h2>
+      <p>Suas respostas vão nos ajudar a melhorar o KidsHub para você e para todas as famílias.<br><br>A Annelise e a Juliana vão adorar ler o que você escreveu 💛</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const WEBHOOK_URL = 'https://script.google.com/macros/s/COLE_SUA_URL_AQUI/exec';
+  let segmento = '';
+  let npsVal = null;
+
+  function init(){
+    const p = new URLSearchParams(window.location.search);
+    const s = (p.get('s') || p.get('segmento') || '').toUpperCase();
+    if(['A','B','C'].includes(s)){
+      escolherSegmento(s);
+    } else {
+      showScreen('screen-choose');
+    }
+  }
+
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function escolherSegmento(s){
+    segmento = s;
+    document.getElementById('seg-a').style.display = s==='A'?'block':'none';
+    document.getElementById('seg-b').style.display = s==='B'?'block':'none';
+    document.getElementById('seg-c').style.display = s==='C'?'block':'none';
+    const titles = {A:'Nos conta um pouco sobre você 🔍',B:'Nos conta um pouco sobre você 🗓️',C:'Que saudade! Nos conta um pouco 💛'};
+    document.getElementById('form-title').textContent = titles[s];
+    showScreen('screen-1');
+  }
+
+  function toggleOpt(el, name, type){
+    if(type==='single'){
+      document.querySelectorAll(`[name="${name}"]`).forEach(i=>{
+        i.closest('.option').classList.remove('selected');
+        i.checked=false;
+      });
+      el.classList.add('selected');
+      el.querySelector('input').checked=true;
+    } else {
+      el.classList.toggle('selected');
+      el.querySelector('input').checked = el.classList.contains('selected');
+    }
+  }
+
+  function getVals(name){
+    return [...document.querySelectorAll(`[name="${name}"]:checked`)].map(i=>i.value);
+  }
+
+  function showErr(id, show){
+    document.getElementById(id).style.display = show?'block':'none';
+  }
+
+  function irPara(tela){
+    if(tela===2){
+      let ok=true;
+      if(!getVals('q1').length){showErr('err-q1',true);ok=false;}else{showErr('err-q1',false);}
+      if(!document.getElementById('q2').value.trim()){showErr('err-q2',true);ok=false;}else{showErr('err-q2',false);}
+      if(!ok)return;
+      showScreen('screen-2');
+    }
+    if(tela===3){
+      let ok=true;
+      if(segmento==='A'){
+        if(!getVals('q3a').length){showErr('err-q3a',true);ok=false;}else{showErr('err-q3a',false);}
+        if(!getVals('q4a').length){showErr('err-q4a',true);ok=false;}else{showErr('err-q4a',false);}
+      }
+      if(segmento==='B'){
+        if(!getVals('q3b').length){showErr('err-q3b',true);ok=false;}else{showErr('err-q3b',false);}
+        if(!getVals('q4b').length){showErr('err-q4b',true);ok=false;}else{showErr('err-q4b',false);}
+      }
+      if(segmento==='C'){
+        if(!getVals('q3c').length){showErr('err-q3c',true);ok=false;}else{showErr('err-q3c',false);}
+        if(!getVals('q4c').length){showErr('err-q4c',true);ok=false;}else{showErr('err-q4c',false);}
+      }
+      if(!ok)return;
+      showScreen('screen-3');
+    }
+  }
+
+  function selectNPS(btn, val){
+    document.querySelectorAll('.nps-btn').forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected');
+    npsVal = val;
+  }
+
+  async function enviar(){
+    if(npsVal===null){showErr('err-nps',true);return;}
+    showErr('err-nps',false);
+
+    const btn = document.getElementById('btn-enviar');
+    btn.disabled=true;
+    btn.textContent='Enviando...';
+
+    const dados = {
+      segmento,
+      timestamp: new Date().toISOString(),
+      q1_canal: getVals('q1').join(', '),
+      q2_expectativa: document.getElementById('q2').value.trim(),
+      nps: npsVal,
+      q_final: document.getElementById('q-final').value.trim()
+    };
+
+    if(segmento==='A'){
+      dados.q3_impedimento = getVals('q3a').join(', ');
+      dados.q4_explorou = getVals('q4a').join(', ');
+      dados.q5_alternativas = document.getElementById('q5a').value.trim();
+    }
+    if(segmento==='B'){
+      dados.q3_experiencia = getVals('q3b').join(', ');
+      dados.q4_motivo_nao_assinou = getVals('q4b').join(', ');
+      dados.q5_reconsideraria = document.getElementById('q5b').value.trim();
+    }
+    if(segmento==='C'){
+      dados.q3_motivo_cancelamento = getVals('q3c').join(', ');
+      dados.q4_frequencia_uso = getVals('q4c').join(', ');
+      dados.q5_diferente = document.getElementById('q5c').value.trim();
+    }
+
+    try {
+      await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(dados)
+      });
+    } catch(e){}
+
+    showScreen('screen-thanks');
+  }
+
+  init();
+</script>
+</body>
+</html>
